@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dingzhen.dao.sys.RoleDao">
+	
+	<select id="findList" parameterType="role" resultType="role">
+		select roleId,roleName,menuIds,operationIds,roleDescription from role where 1 = 1
+		<if test="roleName != null and '' != roleName">  
+            <![CDATA[  
+              AND roleName like '%' #{roleName} '%'  
+            ]]>  
+        </if>
+        <if test="roleId != null and '' != roleId">  
+			AND roleId != '1'
+        </if>
+		<if test="page != null and rows != null" >           
+              limit #{page}, #{rows} 
+        </if>
+	</select>
+
+
+	<select id="count" parameterType="role" resultType="int">
+		select count(*) from role  where 1 = 1
+		<if test="roleName != null and '' != roleName">  
+            <![CDATA[  
+              AND roleName like '%' #{roleName} '%'  
+            ]]>  
+        </if>
+	</select>
+	
+	<select id="findOne" parameterType="role" resultType="role">
+		select roleId,roleName,menuIds,operationIds,roleDescription from role
+		where roleId=#{roleId}	
+	</select>
+	
+	<insert id="add" parameterType="role" >
+		insert role(roleId,roleName,roleDescription,menuIds) 
+		values (#{roleId},#{roleName},#{roleDescription},#{menuIds})
+	</insert>
+	
+	<update id="update" parameterType="role">
+    	update role set
+    	<trim suffixOverrides=",">
+			<if test="roleName!=null">roleName=#{roleName},</if>
+			<if test="menuIds!=null">menuIds=#{menuIds},</if>
+			<if test="operationIds!=null">operationIds=#{operationIds},</if>
+			<if test="roleDescription!=null">roleDescription=#{roleDescription},</if>
+		</trim>
+		<where>roleId=#{roleId}</where>
+    </update>
+	
+	
+	<delete id="delete" parameterType="role">
+		delete from role where roleId=#{roleId}
+	</delete>
+	
+	<delete id="deleteRoleByRoleIds" parameterType="Map">
+		delete from role where roleId in
+		 <foreach collection="roleIds" item='item' open="(" separator="," close=")">
+		 	#{item}
+		 </foreach>
+	</delete>
+	
+	<select id="existRoleWithRoleName" parameterType="String" resultType="role">
+		select roleId,roleName,menuIds,roleDescription from role where roleName=#{roleName} 
+	</select>
+</mapper>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dingzhen.dao.info.ReplyDao">
+
+	<select id="findList" parameterType="reply" resultType="reply">
+		select  
+			a.id,
+			a.conditionid as "condition.id",
+			b.title as "condition.title",
+			b.remarks as "condition.remarks",
+			a.time,
+			a.remarks,
+			a.userid as "user.id",
+			c.realname as "user.realname",
+			c.roleid as "user.roleId"
+		from reply a  
+			left join `condition` b on a.conditionid = b.id
+			left join user c on a.userid = c.id
+		where 1 = 1
+		<if test="type != null and '' != type">
+			and a.type = #{type}
+		</if>
+		<if test="condition != null and condition.id != null and '' != condition.id">
+			and a.conditionid = #{condition.id}
+		</if>
+		<if test="keyword != null and '' != condition">
+			and (
+				b.title like concat('%',#{keyword},'%') or 
+				a.remarks like concat('%',#{keyword},'%') or 
+				c.realname like concat('%',#{keyword},'%')
+			)
+		</if>
+		order by a.time desc
+		<if test="page != null and rows != null" >           
+              limit #{page}, #{rows} 
+        </if>
+	</select>
+
+
+	<select id="count" parameterType="reply" resultType="int">
+		select count(*) 
+		from reply a  
+			left join `condition` b on a.conditionid = b.id
+			left join user c on a.userid = c.id
+		where 1 = 1
+		<if test="type != null and '' != type">
+			and a.type = #{type}
+		</if>
+		<if test="condition != null and condition.id != null and '' != condition.id">
+			and a.conditionid = #{condition.id}
+		</if>
+		<if test="keyword != null and '' != condition">
+			and (
+				b.title like concat('%',#{keyword},'%') or 
+				a.remarks like concat('%',#{keyword},'%') or 
+				c.realname like concat('%',#{keyword},'%') 
+			)
+		</if>
+	</select>
+	
+	
+	
+	
+	
+	<select id="findListOneVSOne" parameterType="reply" resultType="reply">
+		select  
+			a.id,
+			a.conditionid as "condition.id",
+			b.title as "condition.title",
+			b.remarks as "condition.remarks",
+			a.time,
+			a.remarks,
+			a.doctorid as "doctor.id",
+			c.realname as "doctor.realname",
+			a.patientid as "patient.id",
+			d.realname as "patient.realname",
+			a.userid as "user.id",
+			e.roleid as "user.roleId"
+		from reply a  
+			left join `condition` b on a.conditionid = b.id
+			left join user c on a.doctorid = c.id
+			left join user d on a.patientid = d.id
+			left join user e on a.userid = e.id
+		where 1 = 1
+		<if test="type != null and '' != type">
+			and a.type = #{type}
+		</if>
+		<if test="condition != null and condition.id != null and '' != condition.id">
+			and a.conditionid = #{condition.id}
+		</if>
+		<if test="keyword != null and '' != condition">
+			and (
+				b.title like concat('%',#{keyword},'%') or 
+				a.remarks like concat('%',#{keyword},'%') or 
+				c.realname like concat('%',#{keyword},'%') or
+				d.realname like concat('%',#{keyword},'%')
+			)
+		</if>
+		<if test="doctor != null and doctor.id != null and '' != doctor.id">
+			and a.doctorid = #{doctor.id}
+		</if>
+		<if test="patient != null and patient.id != null and '' != patient.id">
+			and a.patientid = #{patient.id}
+		</if>
+		order by a.time desc
+		<if test="page != null and rows != null" >           
+              limit #{page}, #{rows} 
+        </if>
+	</select>
+	
+	
+	<select id="countOneVSOne" parameterType="reply" resultType="int">
+		select count(*) 
+		from reply a  
+			left join `condition` b on a.conditionid = b.id
+			left join user c on a.doctorid = c.id
+			left join user d on a.patientid = d.id
+			left join user e on a.userid = e.id
+		where 1 = 1
+		<if test="type != null and '' != type">
+			and a.type = #{type}
+		</if>
+		<if test="condition != null and condition.id != null and '' != condition.id">
+			and a.conditionid = #{condition.id}
+		</if>
+		<if test="keyword != null and '' != condition">
+			and (
+				b.title like concat('%',#{keyword},'%') or 
+				a.remarks like concat('%',#{keyword},'%') or 
+				c.realname like concat('%',#{keyword},'%') or
+				d.realname like concat('%',#{keyword},'%')
+			)
+		</if>
+		<if test="doctor != null and doctor.id != null and '' != doctor.id">
+			and a.doctorid = #{doctor.id}
+		</if>
+		<if test="patient != null and patient.id != null and '' != patient.id">
+			and a.patientid = #{patient.id}
+		</if>
+	</select>
+	
+	<select id="findSllist" parameterType="reply" resultType="reply">
+		SELECT 
+			DISTINCT a.conditionid as id, a.doctorid as "doctor.id",
+			b.realname as "doctor.realname"
+		from reply a left join user b on a.doctorid = b.id
+		where a.conditionid = #{condition.id}
+		and a.type = '2'	 
+	</select>
+	
+	<select id="findOne" parameterType="reply" resultType="reply">
+		select  
+			a.id,
+			a.conditionid as "condition.id",
+			b.title as "condition.title",
+			b.remarks as "condition.remarks",
+			a.time,
+			a.remarks,
+			a.type,
+			a.userid as "user.id",
+			c.realname as "user.realname",
+			c.roleid as "user.roleId"
+		from reply a  
+			left join `condition` b on a.conditionid = b.id
+			left join user c on a.userid = c.id
+		where a.id = #{id}
+	</select>
+	
+	<insert id="add" parameterType="reply" >
+		insert into reply(id,conditionid,remarks,time,userid,type) 
+		values (#{id},#{condition.id},#{remarks},#{time},#{user.id},#{type})
+	</insert>
+	
+	
+	<insert id="addOneVSOne" parameterType="reply" >
+		insert into reply(id,conditionid,remarks,time,doctorid,patientid,type,userid) 
+		values (#{id},#{condition.id},#{remarks},#{time},#{doctor.id},#{patient.id},#{type},#{user.id})
+	</insert>
+	
+	
+	<update id="update" parameterType="reply">
+    	update reply set time = #{time},remarks = #{remarks} where id = #{id}
+    </update>
+	
+	
+	<delete id="delete" parameterType="reply">
+		delete from reply where id=#{id}
+	</delete>
+	
+	<delete id="deleletByConditionid" parameterType="String">
+		delete from reply where conditionid=#{conditionid}
+	</delete>
+	
+
+</mapper>

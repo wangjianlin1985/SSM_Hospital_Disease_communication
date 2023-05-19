@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dingzhen.dao.sys.OperationDao">
+	
+	<select id="findList" parameterType="operation" resultType="operation">
+		select operationId,operationName,menuId,menuName from operation where 1 = 1
+		<if test="menuId != null and '' != menuId" >           
+          AND   menuId = #{menuId}
+        </if>
+		<if test="page != null and rows != null" >           
+              limit #{page}, #{rows} 
+        </if>
+	</select>
+
+
+	<select id="count" parameterType="operation" resultType="int">
+		select count(*) from operation where 1 = 1
+		<if test="menuId != null and '' != menuId" >           
+          AND   menuId = #{menuId}
+        </if>
+	</select>
+	
+	
+	<insert id="add" parameterType="operation" >
+		insert operation(operationId,operationName,menuId,menuName) 
+		values (#{operationId},#{operationName},#{menuId},#{menuName})
+	</insert>
+	
+	<update id="update" parameterType="operation">
+    	update operation set
+    	<trim suffixOverrides=",">
+			<if test="operationName!=null">operationName=#{operationName},</if>
+		</trim>
+		<where>operationId=#{operationId}</where>
+    </update>
+	
+	
+	<delete id="delete" parameterType="operation">
+		delete from operation where operationId=#{operationId}
+	</delete>
+	
+	<delete id="deleteByMenuId" parameterType="String">
+		delete from operation where menuId = #{menuId}
+	</delete>
+	
+	<delete id="deleteBatch" parameterType="java.util.List">
+		delete from operation 
+		WHERE operationId IN(
+		<foreach item="o" collection="list" open="" separator="," close="" >
+			#{o.operationId}
+		</foreach>
+		)
+	</delete>
+	
+	
+	
+</mapper>

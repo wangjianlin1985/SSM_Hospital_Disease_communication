@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dingzhen.dao.sys.DeptDao">
+
+	<select id="findList" parameterType="dept" resultType="dept">
+		select id,name,sort from dept 
+		order by sort desc
+		<if test="page != null and rows != null" >           
+              limit #{page}, #{rows} 
+        </if>
+	</select>
+
+
+	<select id="count" parameterType="dept" resultType="int">
+		select count(*) from dept 
+	</select>
+	
+	
+	<select id="findOne" parameterType="dept" resultType="dept">
+		select id,name,sort from dept  where id = #{id}
+	</select>
+	
+	<insert id="add" parameterType="dept" >
+		insert into dept(id,name,sort) 
+		values (#{id},#{name},#{sort})
+	</insert>
+	
+	
+	<update id="update" parameterType="dept">
+    	update dept set name = #{name},sort = #{sort} where id = #{id}
+    </update>
+	
+	
+	<delete id="delete" parameterType="dept">
+		delete from dept where id=#{id}
+	</delete>
+	
+
+</mapper>

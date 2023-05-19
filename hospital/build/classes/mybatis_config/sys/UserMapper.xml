@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dingzhen.dao.sys.UserDao">
+	
+	<select id="findList" parameterType="user" resultType="user">
+		select 
+			u.id,u.name,password,u.roleId,u.realname,u.phone,
+			r.roleName,description ,email,
+			u.deptid as "dept.id",d.name as "dept.name"
+		from user u 
+			left join role r on u.roleId = r.roleId 
+			left join dept d on u.deptid = d.id	
+		where u.id != 1
+		<if test="name != null and '' != name">  
+            <![CDATA[  
+              AND (u.name like '%' #{name} '%' or u.phone like '%' #{name} '%' or   u.realname like '%' #{name} '%')
+            ]]>  
+        </if>
+        <if test="roleId!=null and roleId != ''">  
+            <![CDATA[  
+              AND u.roleId = #{roleId}   
+            ]]>  
+        </if>
+		<if test="page != null and rows != null" >           
+              limit #{page}, #{rows} 
+        </if>
+	</select>
+
+
+	<select id="count" parameterType="user" resultType="int">
+		select count(*) from user u left join role r on u.roleId = r.roleId where u.id != 1
+		<if test="name != null and '' != name">  
+            <![CDATA[  
+            AND (u.name like '%' #{name} '%' or u.phone like '%' #{name} '%' or   u.realname like '%' #{name} '%')
+            ]]>  
+        </if>
+         <if test="roleId!=null and roleId!= '' ">  
+            <![CDATA[  
+              AND u.roleId = #{roleId}   
+            ]]>  
+        </if>
+	</select>
+	
+	
+	<select id="findOne" parameterType="user" resultType="user">
+		select 
+			u.id,u.name,password,u.roleId,u.realname,u.phone,
+			r.roleName,description ,email,
+			u.deptid as "dept.id",d.name as "dept.name"
+		from user u 
+			left join role r on u.roleId = r.roleId 
+			left join dept d on u.deptid = d.id	
+		where u.id = #{id}
+	</select>
+	
+	
+	<insert id="add" parameterType="user" >
+		insert user(id,name,password,roleId,description,email,deptid,realname,phone) 
+		values (#{id},#{name},#{password},#{roleId},#{description},#{email},#{dept.id},#{realname},#{phone})
+	</insert>
+	
+	
+	<update id="update" parameterType="user">
+    	update user set
+    	<trim suffixOverrides=",">
+    		<if test="realname!=null">realname=#{realname},</if>
+			<if test="name!=null">name=#{name},</if>
+			<if test="dept!=null and dept.id!=null">deptid=#{dept.id},</if>
+			<if test="password!=null">password=#{password},</if>
+			<if test="roleId!=null">roleId=#{roleId},</if>
+			<if test="description!=null">description=#{description},</if>
+			<if test="email!=null">email=#{email},</if>
+			<if test="phone!=null">phone=#{phone},</if>
+		</trim>
+		<where>id=#{id}</where>
+    </update>
+	
+	
+	<delete id="delete" parameterType="user">
+		delete from user where id=#{id}
+	</delete>
+	
+	
+	<select id="loginUser" parameterType="Map" resultType="user">
+		select id,name,password,roleId,description,realname,email,phone,deptid as "dept.id" from user
+		where name=#{name} and password=#{password}
+	</select>
+	
+	
+	<select id="existUserWithUserName" parameterType="String" resultType="user">
+		select id,name,password,roleId,description from user where name=#{name}
+	</select>
+	
+	
+	<select id="existUserWithRoleId" parameterType="String" resultType="user">
+		select id,name,password,roleId,description from user where roleId=#{roleId} limit 0,1
+	</select>
+	
+	
+	<delete id="deleteBatch" parameterType="java.util.List">
+		delete from user 
+		WHERE id IN(
+		<foreach item="o" collection="list" open="" separator="," close="" >
+			#{o.id}
+		</foreach>
+		)
+	</delete>
+	
+	
+</mapper>

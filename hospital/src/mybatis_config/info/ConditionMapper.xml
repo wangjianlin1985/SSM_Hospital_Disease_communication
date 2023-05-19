@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dingzhen.dao.info.ConditionDao">
+
+	<select id="findList" parameterType="condition" resultType="condition">
+		select 
+			a.id,
+			a.title,
+			a.userid as "user.id",
+			b.name as "user.name",
+			b.realname as "user.realname",
+			a.remarks,
+			a.time,
+			a.deptid as "dept.id",
+			c.name as "dept.name"	
+		from `condition` a 
+			left join user b on a.userid = b.id
+			left join dept c on a.deptid = c.id
+		where 1 = 1
+		<if test="user != null and user.id != null and '' != user.id">
+			and a.userid = #{user.id}
+		</if>
+		<if test="user != null and user.realname != null and '' != user.realname">
+			and b.realname like concat('%',#{user.realname},'%')
+		</if>
+		<if test="title != null and '' != title">
+			and a.title like concat('%',#{title},'%')
+		</if>
+		<if test="dept != null and dept.id != null and '' != dept.id">
+			and a.deptid = #{dept.id}
+		</if>
+		order by a.time desc
+		<if test="page != null and rows != null" >           
+              limit #{page}, #{rows} 
+        </if>
+	</select>
+
+
+	<select id="count" parameterType="condition" resultType="int">
+		select 
+			count(*)
+		from `condition` a 
+			left join user b on a.userid = b.id
+			left join dept c on a.deptid = c.id
+		where 1 = 1
+		<if test="user != null and user.id != null and '' != user.id">
+			and a.userid = #{user.id}
+		</if>
+		<if test="title != null and '' != title">
+			and a.title like concat('%',#{title},'%')
+		</if>
+		<if test="user != null and user.realname != null and '' != user.realname">
+			and b.realname like concat('%',#{user.realname},'%')
+		</if>
+		<if test="dept != null and dept.id != null and '' != dept.id">
+			and a.deptid = #{dept.id}
+		</if>
+	</select>
+	
+	
+	<select id="findOne" parameterType="condition" resultType="condition">
+		select 
+			a.id,
+			a.userid as "user.id",
+			b.name as "user.name",
+			b.realname as "user.realname",
+			a.remarks,
+			a.title,
+			a.time,
+			a.deptid as "dept.id",
+			c.name as "dept.name"	
+		from `condition` a 
+			left join user b on a.userid = b.id
+			left join dept c on a.deptid = c.id
+		where a.id = #{id}
+	</select>
+	
+	<insert id="add" parameterType="condition" >
+		insert into `condition`(id,userid,time,remarks,deptid,title) 
+		values (#{id},#{user.id},#{time},#{remarks},#{dept.id},#{title})
+	</insert>
+	
+	
+	<update id="update" parameterType="condition">
+		update `condition` set
+    	<trim suffixOverrides=",">
+    		<if test="title!=null">title=#{title},</if>
+    		<if test="time!=null">time=#{time},</if>
+			<if test="remarks!=null">remarks=#{remarks},</if>
+			<if test="dept!=null and dept.id!=null">deptid=#{dept.id},</if>
+		</trim>
+		<where>id=#{id}</where>
+    </update>
+	
+	
+	<delete id="delete" parameterType="condition">
+		delete from `condition` where id=#{id}
+	</delete>
+	
+
+</mapper>
